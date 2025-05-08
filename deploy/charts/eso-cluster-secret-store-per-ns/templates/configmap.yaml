@@ -1,0 +1,28 @@
+{{- if .Values.clusterSecretStore.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.clusterSecretStore.name | default (printf "%s-template" .Release.Name) }}
+  labels:
+    app: {{ .Release.Name }}
+data:
+  template.yaml: |
+    apiVersion: external-secrets.io/v1beta1
+    kind: ClusterSecretStore
+    metadata:
+      name: k8s-${NAMESPACE}
+    spec:
+      provider:
+        kubernetes:
+          remoteNamespace: ${NAMESPACE}
+          server:
+            caProvider:
+              type: {{ .Values.clusterSecretStore.template.caProvider.type }}
+              name: {{ .Values.clusterSecretStore.template.caProvider.name }}
+              key: {{ .Values.clusterSecretStore.template.caProvider.key }}
+              namespace: {{ .Values.clusterSecretStore.template.caProvider.namespace }}
+          auth:
+            serviceAccount:
+              name: {{ .Values.clusterSecretStore.template.auth.serviceAccount.name }}
+              namespace: {{ .Values.clusterSecretStore.template.auth.serviceAccount.namespace }}
+{{- end }} 

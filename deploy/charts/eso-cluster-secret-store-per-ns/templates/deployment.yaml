@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name | quote }}
+  labels:
+    app: {{ .Release.Name | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name | quote }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+      containers:
+        - name: operator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: OPERATOR_NAME
+              value: {{ .Release.Name | quote }}
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: TEMPLATE_NAME
+              value: {{ .Values.clusterSecretStore.name | default (printf "%s-template" .Release.Name) | quote }}
+            - name: TARGET_LABEL_KEY
+              value: {{ .Values.label.key | quote }}
+            - name: TARGET_LABEL_VALUE
+              value: {{ .Values.label.value | quote }}
+            - name: PROCESS_EXISTING
+              value: {{ .Values.cleanup.processExisting | quote }}
+            - name: CLEANUP_ON_DELETE
+              value: {{ .Values.cleanup.onDelete | quote }}
+            - name: CLUSTER_SECRET_STORE_NAME_PREFIX
+              value: {{ .Values.clusterSecretStore.namePrefix | quote }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }} 
