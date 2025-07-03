@@ -14,7 +14,7 @@ except config.ConfigException:
 v1 = client.CoreV1Api()
 custom_api = client.CustomObjectsApi()
 
-CLUSTER_SECRET_STORE_API_VERSION = "external-secrets.io/v1beta1"
+CLUSTER_SECRET_STORE_API_VERSION = "external-secrets.io/v1"
 CLUSTER_SECRET_STORE_KIND = "ClusterSecretStore"
 
 # Get configuration from environment variables
@@ -62,7 +62,7 @@ def cleanup(**_):
             # List all ClusterSecretStore resources
             stores = custom_api.list_cluster_custom_object(
                 group="external-secrets.io",
-                version="v1beta1",
+                version="v1",
                 plural="clustersecretstores"
             )
             
@@ -74,7 +74,7 @@ def cleanup(**_):
                     try:
                         custom_api.delete_cluster_custom_object(
                             group="external-secrets.io",
-                            version="v1beta1",
+                            version="v1",
                             plural="clustersecretstores",
                             name=name
                         )
@@ -135,7 +135,7 @@ def create_cluster_secret_store(namespace, meta):
         
         custom_api.create_cluster_custom_object(
             group="external-secrets.io",
-            version="v1beta1",
+            version="v1",
             plural="clustersecretstores",
             body=body
         )
@@ -150,7 +150,7 @@ def delete_cluster_secret_store(namespace: str) -> None:
         try:
             store = custom_api.get_cluster_custom_object(
                 group="external-secrets.io",
-                version="v1beta1",
+                version="v1",
                 plural="clustersecretstores",
                 name=f"{NAME_PREFIX}{namespace}"
             )
@@ -170,7 +170,7 @@ def delete_cluster_secret_store(namespace: str) -> None:
         # If we get here, the resource exists and was created by us, so delete it
         custom_api.delete_cluster_custom_object(
             group="external-secrets.io",
-            version="v1beta1",
+            version="v1",
             plural="clustersecretstores",
             name=f"{NAME_PREFIX}{namespace}"
         )
