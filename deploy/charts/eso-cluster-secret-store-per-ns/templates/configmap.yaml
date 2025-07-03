@@ -7,7 +7,7 @@ metadata:
     app: {{ .Release.Name }}
 data:
   template.yaml: |
-    apiVersion: external-secrets.io/v1beta1
+    apiVersion: external-secrets.io/v1
     kind: ClusterSecretStore
     metadata:
       name: k8s-${NAMESPACE}
